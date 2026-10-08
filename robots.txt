@@ -1,0 +1,16 @@
+User-agent: *
+# Block internal/dynamic pages from being indexed
+Disallow: /dashboard/
+Disallow: /receipt/
+Disallow: /preview/
+Disallow: /login/
+Disallow: /signup/
+Disallow: /forgot-password/
+Disallow: /reset-password/
+
+# Allow all public content
+Allow: /
+
+# Sitemap
+Sitemap: https://receipts-maker.com/sitemap.xml
+

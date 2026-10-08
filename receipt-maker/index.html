@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Create Receipt | Free Professional Receipt Maker</title>
+<meta name="description" content="Create, customize, and download your professional receipt instantly."/>
+<link rel="stylesheet" href="/_next/static/css/4cdd78f5aa7f582e.css"/>
+<link rel="icon" href="/favicon.svg"/>
+<!-- PDF Generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+/* Base Styles */
+body { font-family: 'Inter', system-ui, sans-serif; background: #f8fafc; color: #0f172a; margin: 0; padding: 0; }
+.nav { position: sticky; top: 0; z-index: 100; background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(12px); border-bottom: 1px solid #e2e8f0; padding: 0 24px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+.nav-logo { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 18px; color: #0f172a; text-decoration: none; }
+.nav-links { display: flex; align-items: center; gap: 20px; }
+.nav-links a { font-size: 14px; font-weight: 600; color: #64748b; text-decoration: none; transition: color 0.2s; }
+.nav-links a:hover { color: #4f46e5; }
+.btn-outline { border: 2px solid #e2e8f0; background: #fff; color: #64748b; padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+.btn-outline:hover { border-color: #cbd5e1; color: #0f172a; }
+
+/* Layout */
+.main-layout { display: grid; grid-template-columns: 1fr 480px; min-height: calc(100vh - 64px); }
+.form-panel { padding: 32px; overflow-y: auto; max-height: calc(100vh - 64px); background: #f8fafc; }
+.preview-panel { background: #e2e8f0; padding: 40px; display: flex; align-items: flex-start; justify-content: center; overflow-y: auto; max-height: calc(100vh - 64px); }
+
+@media (max-width: 1024px) {
+    .main-layout { grid-template-columns: 1fr; }
+    .preview-panel { display: none; } /* Hidden on mobile until Preview clicked */
+    .form-panel { max-height: none; padding: 24px 16px; }
+}
+
+/* Template Badge */
+.tpl-indicator { display: inline-flex; align-items: center; gap: 8px; background: #eef2ff; border: 1px solid #c7d2fe; color: #4f46e5; padding: 6px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; margin-bottom: 24px; }
+.tpl-indicator a { color: #94a3b8; text-decoration: none; margin-left: 4px; font-size: 14px; }
+.tpl-indicator a:hover { color: #4f46e5; }
+
+/* Form Sections */
+.section-card { background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
+.section-title { font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.form-row.full { grid-template-columns: 1fr; }
+.form-row.three { grid-template-columns: 1fr 1fr 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group label { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; }
+.form-group input, .form-group select, .form-group textarea { border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 10px 14px; font-size: 14px; color: #0f172a; background: #fff; outline: none; transition: border 0.2s, box-shadow 0.2s; font-family: inherit; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+.form-group textarea { resize: vertical; min-height: 80px; }
+
+/* Dynamic Items */
+.items-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+.item-row { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 8px; align-items: center; background: #f8fafc; padding: 12px; border-radius: 12px; border: 1px solid #e2e8f0; }
+.item-row input { border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 8px 12px; font-size: 14px; background: #fff; width: 100%; outline: none; }
+.item-row input:focus { border-color: #4f46e5; }
+.btn-remove { background: #fee2e2; color: #ef4444; border: none; border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; transition: background 0.2s; }
+.btn-remove:hover { background: #fca5a5; color: #b91c1c; }
+.btn-add { background: #eef2ff; color: #4f46e5; border: none; border-radius: 10px; padding: 10px 20px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+.btn-add:hover { background: #e0e7ff; }
+
+/* Totals Box */
+.totals-box { background: #f8fafc; border-radius: 12px; padding: 20px; border: 1px solid #e2e8f0; margin-top: 16px; }
+.total-row { display: flex; justify-content: space-between; font-size: 14px; color: #475569; font-weight: 600; padding: 6px 0; }
+.total-row.grand { font-size: 18px; color: #0f172a; font-weight: 900; border-top: 2px solid #cbd5e1; padding-top: 12px; margin-top: 8px; }
+
+/* Action Buttons */
+.btn-generate { width: 100%; background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; border: none; border-radius: 14px; padding: 18px; font-size: 16px; font-weight: 800; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; margin-top: 24px; box-shadow: 0 8px 24px rgba(79, 70, 229, 0.25); display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-generate:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(79, 70, 229, 0.35); }
+
+/* Logo Upload */
+.logo-upload-area { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; background: #fafafa; transition: border 0.2s; position: relative; overflow: hidden; }
+.logo-upload-area:hover { border-color: #4f46e5; background: #f5f3ff; }
+.logo-preview-img { max-width: 120px; max-height: 80px; object-fit: contain; margin: 0 auto; display: none; }
+.logo-text { font-size: 13px; color: #64748b; font-weight: 600; }
+.logo-remove { display: none; background: rgba(0,0,0,0.5); color: #fff; font-size: 12px; padding: 4px 8px; border-radius: 999px; position: absolute; top: 8px; right: 8px; border: none; cursor: pointer; }
+
+/* ----------------------------------------------------------------------
+   RECEIPT PREVIEW STYLES (Rendered inside .receipt-container)
+   ---------------------------------------------------------------------- */
+.preview-wrapper { width: 100%; max-width: 400px; display: flex; flex-direction: column; align-items: center; }
+.preview-label { font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
+.receipt-container { width: 100%; background: #fff; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border-radius: 4px; overflow: hidden; }
+
+/* Universal Print Reset inside receipt */
+.receipt-container * { box-sizing: border-box; }
+
+/* 1. THERMAL STYLE */
+.receipt-thermal { font-family: 'Courier New', Courier, monospace; padding: 30px 24px; color: #000; background: #fff; line-height: 1.5; font-size: 14px; position: relative; }
+.receipt-thermal::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 8px; background: repeating-linear-gradient(45deg, #f1f5f9, #f1f5f9 10px, #fff 10px, #fff 20px); border-bottom: 1px solid #e2e8f0; }
+.receipt-thermal .r-header { text-align: center; margin-bottom: 20px; }
+.receipt-thermal .r-logo { max-width: 120px; max-height: 80px; margin: 0 auto 10px; display: block; }
+.receipt-thermal .r-biz { font-weight: bold; font-size: 20px; margin-bottom: 4px; text-transform: uppercase; }
+.receipt-thermal .r-address { font-size: 12px; }
+.receipt-thermal .r-contact { font-size: 12px; }
+.receipt-thermal .r-meta { font-size: 12px; margin-bottom: 16px; }
+.receipt-thermal .r-meta div { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.receipt-thermal .r-divider { border-bottom: 1px dashed #000; margin: 12px 0; }
+.receipt-thermal .r-table { width: 100%; font-size: 13px; margin-bottom: 12px; }
+.receipt-thermal .r-table th { text-align: left; padding-bottom: 8px; border-bottom: 1px dashed #000; font-weight: normal; }
+.receipt-thermal .r-table td { padding: 4px 0; vertical-align: top; }
+.receipt-thermal .r-table td:nth-child(2), .receipt-thermal .r-table th:nth-child(2) { text-align: center; }
+.receipt-thermal .r-table td:last-child, .receipt-thermal .r-table th:last-child { text-align: right; }
+.receipt-thermal .r-totals { margin-top: 12px; }
+.receipt-thermal .r-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px; }
+.receipt-thermal .r-grand { display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; border-top: 1px dashed #000; padding-top: 8px; margin-top: 8px; }
+.receipt-thermal .r-footer { text-align: center; margin-top: 30px; font-size: 12px; }
+.receipt-thermal .barcode { font-family: 'Libre Barcode 39', monospace; font-size: 40px; text-align: center; margin-top: 20px; }
+
+/* 2. MODERN STYLE */
+.receipt-modern { font-family: 'Inter', system-ui, sans-serif; padding: 40px; background: #fff; color: #1e293b; border-radius: 16px; }
+.receipt-modern .r-header-box { background: var(--theme-color, #4f46e5); color: #fff; padding: 24px; border-radius: 12px; margin-bottom: 24px; }
+.receipt-modern .r-biz { font-weight: 900; font-size: 24px; margin-bottom: 4px; }
+.receipt-modern .r-header-flex { display: flex; justify-content: space-between; align-items: center; }
+.receipt-modern .r-logo { max-height: 50px; max-width: 150px; background: #fff; padding: 4px; border-radius: 6px; }
+.receipt-modern .r-title { font-size: 14px; font-weight: 700; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.05em; }
+.receipt-modern .r-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; font-size: 13px; }
+.receipt-modern .r-meta-block h4 { font-size: 11px; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; font-weight: 700; }
+.receipt-modern .r-meta-block p { margin: 0; color: #334155; font-weight: 500; }
+.receipt-modern .r-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+.receipt-modern .r-table th { background: #f8fafc; padding: 12px; text-align: left; font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; border-radius: 8px 8px 0 0; }
+.receipt-modern .r-table th:last-child { text-align: right; }
+.receipt-modern .r-table td { padding: 16px 12px; font-size: 14px; border-bottom: 1px solid #f1f5f9; }
+.receipt-modern .r-table td:last-child { text-align: right; font-weight: 600; }
+.receipt-modern .r-totals-container { display: flex; justify-content: flex-end; }
+.receipt-modern .r-totals { width: 200px; }
+.receipt-modern .r-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 12px; color: #64748b; }
+.receipt-modern .r-grand { display: flex; justify-content: space-between; font-size: 20px; font-weight: 900; color: var(--theme-color, #4f46e5); border-top: 2px solid #e2e8f0; padding-top: 16px; margin-top: 4px; }
+.receipt-modern .r-footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #f1f5f9; font-size: 13px; color: #94a3b8; text-align: center; }
+
+/* 3. ELEGANT STYLE */
+.receipt-elegant { font-family: 'Georgia', serif; padding: 40px; background: #fffbf5; color: #451a03; border: 1px solid #fcd34d; position: relative; }
+.receipt-elegant::after { content: ""; position: absolute; inset: 6px; border: 1px solid #fde68a; pointer-events: none; }
+.receipt-elegant .r-header { text-align: center; margin-bottom: 30px; border-bottom: 1px solid #fcd34d; padding-bottom: 20px; }
+.receipt-elegant .r-logo { max-height: 80px; max-width: 150px; margin: 0 auto 16px; }
+.receipt-elegant .r-biz { font-size: 28px; font-weight: normal; font-style: italic; color: var(--theme-color, #92400e); margin-bottom: 8px; }
+.receipt-elegant .r-address { font-size: 13px; color: #78350f; }
+.receipt-elegant .r-meta { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 24px; border-bottom: 1px solid #fef3c7; padding-bottom: 12px; }
+.receipt-elegant .r-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+.receipt-elegant .r-table th { padding: 8px 0; font-size: 12px; font-weight: normal; color: #92400e; text-transform: uppercase; border-bottom: 1px solid #fcd34d; text-align: left; }
+.receipt-elegant .r-table th:last-child { text-align: right; }
+.receipt-elegant .r-table td { padding: 12px 0; font-size: 14px; border-bottom: 1px dashed #fde68a; }
+.receipt-elegant .r-table td:last-child { text-align: right; }
+.receipt-elegant .r-totals { width: 50%; margin-left: auto; }
+.receipt-elegant .r-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; color: #78350f; }
+.receipt-elegant .r-grand { display: flex; justify-content: space-between; font-size: 22px; font-weight: normal; color: var(--theme-color, #92400e); border-top: 1px solid #fcd34d; padding-top: 12px; margin-top: 8px; font-style: italic; }
+.receipt-elegant .r-footer { margin-top: 40px; text-align: center; font-size: 13px; font-style: italic; color: #92400e; }
+
+/* 4. DARK STYLE */
+.receipt-dark { font-family: 'Inter', sans-serif; padding: 40px; background: #0f172a; color: #e2e8f0; }
+.receipt-dark .r-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; border-bottom: 1px solid #334155; padding-bottom: 24px; }
+.receipt-dark .r-logo { max-height: 60px; max-width: 150px; background: #fff; padding: 6px; border-radius: 4px; }
+.receipt-dark .r-biz { font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+.receipt-dark .r-title { font-size: 32px; font-weight: 900; color: var(--theme-color, #818cf8); letter-spacing: -0.02em; }
+.receipt-dark .r-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px; }
+.receipt-dark .r-meta-block h4 { font-size: 11px; color: #64748b; text-transform: uppercase; margin-bottom: 6px; }
+.receipt-dark .r-meta-block p { margin: 0; font-size: 14px; color: #cbd5e1; }
+.receipt-dark .r-table { width: 100%; border-collapse: collapse; margin-bottom: 32px; }
+.receipt-dark .r-table th { padding: 12px; background: #1e293b; color: #94a3b8; font-size: 12px; font-weight: 600; text-align: left; border-radius: 4px; }
+.receipt-dark .r-table th:last-child { text-align: right; }
+.receipt-dark .r-table td { padding: 16px 12px; font-size: 14px; border-bottom: 1px solid #1e293b; }
+.receipt-dark .r-table td:last-child { text-align: right; color: #fff; font-weight: 600; }
+.receipt-dark .r-totals-wrapper { display: flex; justify-content: flex-end; }
+.receipt-dark .r-totals { width: 250px; background: #1e293b; padding: 20px; border-radius: 12px; }
+.receipt-dark .r-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 12px; color: #94a3b8; }
+.receipt-dark .r-grand { display: flex; justify-content: space-between; font-size: 20px; font-weight: 800; color: var(--theme-color, #818cf8); border-top: 1px solid #334155; padding-top: 16px; margin-top: 4px; }
+.receipt-dark .r-footer { margin-top: 40px; text-align: center; font-size: 13px; color: #64748b; }
+
+/* FULL SCREEN PREVIEW MODAL */
+.modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; opacity: 0; transition: opacity 0.3s; }
+.modal-overlay.open { display: flex; opacity: 1; }
+.modal-content { background: transparent; width: 100%; max-width: 800px; display: flex; flex-direction: column; align-items: center; gap: 20px; max-height: 95vh; }
+.modal-actions { background: #fff; padding: 16px 24px; border-radius: 16px; display: flex; gap: 16px; width: 100%; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+.action-btn { display: flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 12px; font-size: 15px; font-weight: 700; border: none; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+.action-btn:hover { transform: translateY(-2px); }
+.btn-pdf { background: #fee2e2; color: #dc2626; }
+.btn-pdf:hover { background: #fecaca; box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2); }
+.btn-share { background: #e0e7ff; color: #4f46e5; }
+.btn-share:hover { background: #c7d2fe; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
+.btn-close { background: #f1f5f9; color: #475569; }
+.btn-close:hover { background: #e2e8f0; }
+.modal-receipt-wrapper { width: 100%; max-width: 450px; background: transparent; overflow-y: auto; border-radius: 8px; }
+.modal-receipt-wrapper::-webkit-scrollbar { display: none; }
+</style>
+<link rel="canonical" href="https://receipts-maker.com/receipt-maker/"/>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-94F3DZ6LDW"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-94F3DZ6LDW');
+  </script>
+</head>
+<body>
+<div class="min-h-screen bg-white flex flex-col">
+
+<!-- NAV -->
+<header class="nav">
+    <a class="nav-logo" href="/">
+        <svg viewBox="0 0 24 24" fill="none" class="w-8 h-8 rounded-lg shadow-md bg-indigo-600"><rect x="3" y="2" width="18" height="20" rx="3" fill="#4f46e5"/><path d="M7 6H17M7 10H17M7 14H13" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>Receipt Maker</span>
+    </a>
+    <div class="nav-links">
+        <a href="/templates/">Browse Templates</a>
+        <a href="/receipt-maker/" class="btn-outline">Reset Form</a>
+    </div>
+</header>
+    <!-- Mobile menu -->
+    <div id="mobile-menu" class="hidden md:hidden border-b border-slate-200 bg-white px-4 pt-2 pb-4 space-y-1 shadow-inner relative z-40">
+      <a class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition-colors" href="/#features">Features</a>
+      <a class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition-colors" href="/templates/">Templates</a>
+      <a class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition-colors" href="/about/">About Us</a>
+      <a class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition-colors" href="/privacy-policy/">Privacy Policy</a>
+      <a class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition-colors" href="/contact-us/">Contact Us</a>
+      <a class="block px-3 py-2 rounded-md text-base font-medium text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition-colors" href="/blog/">Blog</a>
+      <div class="border-t border-slate-200 pt-4 pb-2">
+        <a class="block px-3 py-2 rounded-md text-base font-bold text-slate-700 hover:text-indigo-600 hover:bg-slate-50 transition-colors" href="/login/">Login</a>
+      </div>
+    </div>
+
+<div class="main-layout">
+    <!-- FORM PANEL -->
+    <div class="form-panel">
+        <div class="tpl-indicator" id="tplIndicator" style="display:none;">
+            <span>Using Template: <strong id="tplNameDisplay"></strong></span>
+            <a href="/templates/">Change</a>
+        </div>
+
+        <h1 class="text-2xl font-black text-slate-900 mb-6">Receipt Details</h1>
+
+        <!-- Header Info -->
+        <div class="section-card">
+            <div class="section-title">🏢 Business Information</div>
+            <div class="form-group" style="margin-bottom: 16px;">
+                <label>Business Logo</label>
+                <div class="logo-upload-area" id="logoUploadArea" onclick="document.getElementById('logoInput').click()">
+                    <div id="logoUploadText">
+                        <span style="font-size: 24px;">📸</span><br/>
+                        <span class="logo-text">Click to upload logo</span>
+                    </div>
+                    <img id="logoPreview" class="logo-preview-img" src="" alt="Logo"/>
+                    <button class="logo-remove" id="logoRemove" onclick="removeLogo(event)">Remove</button>
+                    <input type="file" id="logoInput" accept="image/*" style="display:none;" onchange="handleLogoUpload(event)"/>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Business Name</label>
+                    <input type="text" id="bizName" value="My Business LLC" oninput="updatePreview()"/>
+                </div>
+                <div class="form-group">
+                    <label>Receipt Title</label>
+                    <input type="text" id="receiptTitle" value="SALES RECEIPT" oninput="updatePreview()"/>
+                </div>
+            </div>
+            <div class="form-row full">
+                <div class="form-group">
+                    <label>Address / Contact Info</label>
+                    <input type="text" id="bizAddress" value="123 Commerce St, City, ST 12345 | Tel: (555) 123-4567" oninput="updatePreview()"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- Receipt Meta -->
+        <div class="section-card">
+            <div class="section-title">📄 Receipt Details</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Receipt Number</label>
+                    <input type="text" id="receiptNo" value="REC-10042" oninput="updatePreview()"/>
+                </div>
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="receiptDate" oninput="updatePreview()"/>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Customer Name (Optional)</label>
+                    <input type="text" id="customerName" placeholder="e.g. John Doe" oninput="updatePreview()"/>
+                </div>
+                <div class="form-group">
+                    <label>Currency Symbol</label>
+                    <select id="currency" onchange="updatePreview()">
+                        <option value="$">$ (USD)</option>
+                        <option value="€">€ (EUR)</option>
+                        <option value="£">£ (GBP)</option>
+                        <option value="₹">₹ (INR)</option>
+                        <option value="¥">¥ (JPY)</option>
+                        <option value="R">R (ZAR)</option>
+                        <option value="">None</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Travel Information (Specific to Travel & Tours Template) -->
+        <div class="section-card" id="travelInfoCard" style="display:none;">
+            <div class="section-title">✈️ Travel Details</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Passenger / Traveler Name(s)</label>
+                    <input type="text" id="travelerName" value="John Doe, Jane Doe" oninput="updatePreview()"/>
+                </div>
+                <div class="form-group">
+                    <label>Booking / Ticket ID</label>
+                    <input type="text" id="bookingId" value="SUT-2026-984" oninput="updatePreview()"/>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Destination / Tour Package</label>
+                    <input type="text" id="travelDestination" value="Northern Areas Tour (5 Days)" oninput="updatePreview()"/>
+                </div>
+                <div class="form-group">
+                    <label>Travel Dates</label>
+                    <input type="text" id="travelDates" value="15-Jul-2026 to 20-Jul-2026" oninput="updatePreview()"/>
+                </div>
+            </div>
+        </div>
+
+        <!-- Items -->
+        <div class="section-card">
+            <div class="section-title">🛒 Line Items</div>
+            <div class="items-container" id="itemsContainer">
+                <!-- Items injected here -->
+            </div>
+            <button class="btn-add" onclick="addItem()">+ Add Line Item</button>
+
+            <!-- Totals inputs -->
+            <div class="totals-box">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tax Rate (%)</label>
+                        <input type="number" id="taxRate" value="8" step="0.1" oninput="calculateTotals()"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Discount Amount</label>
+                        <input type="number" id="discount" value="0" step="0.01" oninput="calculateTotals()"/>
+                    </div>
+                </div>
+                <div class="total-row" style="margin-top: 12px;">
+                    <span>Subtotal:</span>
+                    <span id="lblSubtotal">$0.00</span>
+                </div>
+                <div class="total-row">
+                    <span>Tax:</span>
+                    <span id="lblTax">$0.00</span>
+                </div>
+                <div class="total-row">
+                    <span>Discount:</span>
+                    <span id="lblDiscount">-$0.00</span>
+                </div>
+                <div class="total-row grand">
+                    <span>Grand Total:</span>
+                    <span id="lblTotal">$0.00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="section-card">
+            <div class="section-title">📝 Footer Message</div>
+            <div class="form-group">
+                <textarea id="footerMsg" oninput="updatePreview()">Thank you for your business! Please keep this receipt for your records.</textarea>
+            </div>
+        </div>
+
+        <button class="btn-generate" onclick="openModal()">
+            <span>👁️</span> Preview &amp; Download Receipt
+        </button>
+    </div>
+
+    <!-- PREVIEW PANEL (Desktop) -->
+    <div class="preview-panel">
+        <div class="preview-wrapper">
+            <div class="preview-label">Live Preview</div>
+            <div class="receipt-container" id="livePreviewContainer">
+                <!-- Live preview injected here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FULL SCREEN MODAL -->
+<div class="modal-overlay" id="previewModal">
+    <div class="modal-content">
+        <div class="modal-actions">
+            <button class="action-btn btn-pdf" onclick="downloadPDF()">📄 Download PDF</button>
+            <button class="action-btn btn-share" onclick="shareWhatsApp()">💬 WhatsApp</button>
+            <button class="action-btn btn-close" onclick="closeModal()">✕ Edit</button>
+        </div>
+        <div class="modal-receipt-wrapper">
+            <div class="receipt-container" id="modalPreviewContainer">
+                <!-- Modal preview injected here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<script>
+// Default Date
+document.getElementById('receiptDate').valueAsDate = new Date();
+
+// State
+let items = [
+    { desc: "Premium Service / Item", qty: 1, price: 150.00 },
+    { desc: "Additional Part", qty: 2, price: 25.00 }
+];
+let logoBase64 = null;
+
+// Template Settings (Overridden by URL params)
+let currentStyle = 'thermal';
+let currentThemeColor = '#111111';
+
+// Check URL Params for Template
+const urlParams = new URLSearchParams(window.location.search);
+const tplId = urlParams.get('template');
+const tplName = urlParams.get('tname');
+if(tplId && tplName) {
+    document.getElementById('tplIndicator').style.display = 'inline-flex';
+    document.getElementById('tplNameDisplay').innerText = tplName;
+    
+    // Apply template styles based on name/id logic (matching the gallery)
+    // Map categories to styles
+    const stylesMap = {
+        'walmart':'thermal','target':'thermal','costco':'thermal','bestbuy':'thermal','kroger':'thermal','cvs':'thermal',
+        'amazon':'modern',
+        'diner':'thermal','pizza':'thermal',
+        'fine_dining':'elegant','cafe':'elegant','sushi':'elegant','bakery':'elegant',
+        'freelancer':'modern','gym':'modern','cleaning':'modern','plumber':'modern',
+        'salon':'elegant',
+        'consulting':'dark',
+        'clinic':'modern','pharmacy':'modern','dental':'modern','optician':'modern','physio':'modern',
+        'garage':'modern','carwash':'modern','tires':'modern',
+        'fuel':'thermal','parking':'thermal',
+        'hotel':'elegant','resort':'elegant',
+        'vacation_rental':'modern','hostel':'modern',
+        'travel_tours':'elegant'
+    };
+    
+    const colorsMap = {
+        'amazon':'#FF9900','fine_dining':'#1E293B','cafe':'#92400E','sushi':'#BE123C','bakery':'#B45309',
+        'freelancer':'#4F46E5','salon':'#BE185D','gym':'#0284C7','cleaning':'#059669','consulting':'#6D28D9','plumber':'#0369A1',
+        'clinic':'#0891B2','pharmacy':'#16A34A','dental':'#0284C7','optician':'#7C3AED','physio':'#0E7490',
+        'garage':'#B91C1C','carwash':'#0284C7','tires':'#1E293B',
+        'hotel':'#92400E','vacation_rental':'#E11D48','resort':'#0284C7','hostel':'#7C3AED',
+        'travel_tours':'#0284C7'
+    };
+
+    if(stylesMap[tplId]) currentStyle = stylesMap[tplId];
+    if(colorsMap[tplId]) currentThemeColor = colorsMap[tplId];
+    
+    // Pre-fill some data based on template
+    if (tplId === 'travel_tours') {
+        document.getElementById('bizName').value = "Sultan Travel and Tours";
+        document.getElementById('bizAddress').value = "Urdu Bazar Nowshehran Virkan GRW";
+        document.getElementById('travelInfoCard').style.display = 'block';
+        items = [
+            { desc: "Northern Areas Tour Package (per person)", qty: 2, price: 750.00 },
+            { desc: "Hotel Accommodation & Transport Service", qty: 1, price: 450.00 },
+            { desc: "Local Tour Guide & Sightseeing Fees", qty: 1, price: 150.00 }
+        ];
+    } else {
+        document.getElementById('bizName').value = tplName + (currentStyle==='thermal'?' Store':' LLC');
+    }
+}
+
+// Logo Handling
+function handleLogoUpload(e) {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        logoBase64 = event.target.result;
+        document.getElementById('logoPreview').src = logoBase64;
+        document.getElementById('logoPreview').style.display = 'block';
+        document.getElementById('logoUploadText').style.display = 'none';
+        document.getElementById('logoRemove').style.display = 'block';
+        updatePreview();
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeLogo(e) {
+    e.stopPropagation();
+    logoBase64 = null;
+    document.getElementById('logoInput').value = '';
+    document.getElementById('logoPreview').src = '';
+    document.getElementById('logoPreview').style.display = 'none';
+    document.getElementById('logoUploadText').style.display = 'block';
+    document.getElementById('logoRemove').style.display = 'none';
+    updatePreview();
+}
+
+// Items Handling
+function renderItems() {
+    const container = document.getElementById('itemsContainer');
+    container.innerHTML = '';
+    items.forEach((item, index) => {
+        container.innerHTML += `
+            <div class="item-row">
+                <input type="text" placeholder="Description" value="${item.desc}" oninput="updateItem(${index}, 'desc', this.value)"/>
+                <input type="number" placeholder="Qty" value="${item.qty}" min="1" oninput="updateItem(${index}, 'qty', this.value)"/>
+                <input type="number" placeholder="Price" value="${item.price}" step="0.01" oninput="updateItem(${index}, 'price', this.value)"/>
+                <button class="btn-remove" onclick="removeItem(${index})" title="Remove Item">×</button>
+            </div>
+        `;
+    });
+    calculateTotals();
+}
+
+function addItem() {
+    items.push({ desc: "", qty: 1, price: 0.00 });
+    renderItems();
+}
+
+function removeItem(index) {
+    items.splice(index, 1);
+    renderItems();
+}
+
+function updateItem(index, field, value) {
+    items[index][field] = field === 'desc' ? value : parseFloat(value) || 0;
+    calculateTotals();
+}
+
+// Calculation & Update
+function calculateTotals() {
+    let subtotal = 0;
+    items.forEach(item => { subtotal += (item.qty * item.price); });
+    
+    const taxRate = parseFloat(document.getElementById('taxRate').value) || 0;
+    const discount = parseFloat(document.getElementById('discount').value) || 0;
+    
+    const tax = subtotal * (taxRate / 100);
+    const total = subtotal + tax - discount;
+    
+    const sym = document.getElementById('currency').value;
+    
+    document.getElementById('lblSubtotal').innerText = sym + subtotal.toFixed(2);
+    document.getElementById('lblTax').innerText = sym + tax.toFixed(2);
+    document.getElementById('lblDiscount').innerText = '-' + sym + discount.toFixed(2);
+    document.getElementById('lblTotal').innerText = sym + total.toFixed(2);
+    
+    updatePreview();
+}
+
+// Formatter helper
+function fmt(val) {
+    return document.getElementById('currency').value + parseFloat(val).toFixed(2);
+}
+
+// Generate the HTML for the receipt based on style
+function generateReceiptHTML() {
+    // Collect Data
+    const d = {
+        biz: document.getElementById('bizName').value || 'Business Name',
+        title: document.getElementById('receiptTitle').value || 'RECEIPT',
+        addr: document.getElementById('bizAddress').value || '',
+        no: document.getElementById('receiptNo').value || '',
+        date: document.getElementById('receiptDate').value || '',
+        cust: document.getElementById('customerName').value || '',
+        footer: document.getElementById('footerMsg').value || '',
+        sym: document.getElementById('currency').value,
+        sub: 0, taxRate: parseFloat(document.getElementById('taxRate').value)||0, discount: parseFloat(document.getElementById('discount').value)||0
+    };
+    
+    items.forEach(i => d.sub += (i.qty * i.price));
+    d.tax = d.sub * (d.taxRate / 100);
+    d.total = d.sub + d.tax - d.discount;
+    
+    let logoHtml = logoBase64 ? `<img src="${logoBase64}" class="r-logo" alt="Logo"/>` : '';
+
+    const travelerName = document.getElementById('travelerName') ? document.getElementById('travelerName').value : '';
+    const bookingId = document.getElementById('bookingId') ? document.getElementById('bookingId').value : '';
+    const travelDestination = document.getElementById('travelDestination') ? document.getElementById('travelDestination').value : '';
+    const travelDates = document.getElementById('travelDates') ? document.getElementById('travelDates').value : '';
+
+    let travelDetailsHtml = '';
+    if (tplId === 'travel_tours') {
+        if (currentStyle === 'thermal') {
+            travelDetailsHtml = `
+                <div style="border: 1px dashed #000; padding: 8px; margin-bottom: 12px; font-size: 12px; font-family: monospace; text-align: left;">
+                    <div style="text-align: center; font-weight: bold; margin-bottom: 4px;">BOOKING DETAILS</div>
+                    <div>Booking ID: ${bookingId}</div>
+                    <div>Travel Date: ${travelDates}</div>
+                    <div>Passenger: ${travelerName}</div>
+                    <div>Tour/Dest: ${travelDestination}</div>
+                </div>
+            `;
+        } else {
+            travelDetailsHtml = `
+                <div style="background: rgba(2, 132, 199, 0.05); border: 1px solid rgba(2, 132, 199, 0.15); border-radius: 8px; padding: 12px; margin-bottom: 20px; font-family: inherit; text-align: left;">
+                    <div style="font-weight: 800; font-size: 11px; text-transform: uppercase; color: #0284c7; margin-bottom: 8px; letter-spacing: 0.05em;">✈️ Booking & Travel Details</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; color: #334155;">
+                        <div><b>Booking ID:</b> ${bookingId}</div>
+                        <div><b>Travel Date:</b> ${travelDates}</div>
+                        <div style="grid-column: span 2;"><b>Passenger(s):</b> ${travelerName}</div>
+                        <div style="grid-column: span 2;"><b>Tour / Destination:</b> ${travelDestination}</div>
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    if (currentStyle === 'thermal') {
+        let itemsHtml = items.map(i => `
+            <tr>
+                <td>${i.qty}x ${i.desc}</td>
+                <td>${fmt(i.price)}</td>
+                <td>${fmt(i.qty * i.price)}</td>
+            </tr>
+        `).join('');
+        
+        return `
+        <div class="receipt-thermal">
+            <div class="r-header">
+                ${logoHtml}
+                <div class="r-biz">${d.biz}</div>
+                <div class="r-address">${d.addr}</div>
+            </div>
+            <div class="r-meta">
+                <div><span>Receipt No:</span><span>${d.no}</span></div>
+                <div><span>Date:</span><span>${d.date}</span></div>
+                ${d.cust ? `<div><span>Customer:</span><span>${d.cust}</span></div>` : ''}
+            </div>
+            <div class="r-divider"></div>
+            ${travelDetailsHtml}
+            <table class="r-table">
+                <thead><tr><th>Item</th><th>Price</th><th>Total</th></tr></thead>
+                <tbody>${itemsHtml}</tbody>
+            </table>
+            <div class="r-divider"></div>
+            <div class="r-totals">
+                <div class="r-row"><span>Subtotal</span><span>${fmt(d.sub)}</span></div>
+                <div class="r-row"><span>Tax (${d.taxRate}%)</span><span>${fmt(d.tax)}</span></div>
+                ${d.discount > 0 ? `<div class="r-row"><span>Discount</span><span>-${fmt(d.discount)}</span></div>` : ''}
+                <div class="r-grand"><span>TOTAL</span><span>${fmt(d.total)}</span></div>
+            </div>
+            <div class="r-footer">${d.footer.replace(/\n/g, '<br/>')}</div>
+            <div class="barcode">*${d.no}*</div>
+        </div>`;
+    }
+    
+    if (currentStyle === 'modern') {
+        let itemsHtml = items.map(i => `
+            <tr>
+                <td><div style="font-weight:600;color:#1e293b;">${i.desc}</div><div style="font-size:12px;color:#94a3b8;">Qty: ${i.qty} × ${fmt(i.price)}</div></td>
+                <td>${fmt(i.qty * i.price)}</td>
+            </tr>
+        `).join('');
+        
+        return `
+        <div class="receipt-modern" style="--theme-color: ${currentThemeColor};">
+            <div class="r-header-box">
+                <div class="r-header-flex">
+                    <div>
+                        <div class="r-biz">${d.biz}</div>
+                        <div class="r-title">${d.title}</div>
+                    </div>
+                    ${logoHtml}
+                </div>
+            </div>
+            <div class="r-meta-grid">
+                <div class="r-meta-block"><h4>Invoice / Receipt #</h4><p>${d.no}</p></div>
+                <div class="r-meta-block"><h4>Date of Issue</h4><p>${d.date}</p></div>
+                <div class="r-meta-block"><h4>Billed From</h4><p>${d.addr}</p></div>
+                ${d.cust ? `<div class="r-meta-block"><h4>Billed To</h4><p>${d.cust}</p></div>` : ''}
+            </div>
+            ${travelDetailsHtml}
+            <table class="r-table">
+                <thead><tr><th>Description</th><th>Amount</th></tr></thead>
+                <tbody>${itemsHtml}</tbody>
+            </table>
+            <div class="r-totals-container">
+                <div class="r-totals">
+                    <div class="r-row"><span>Subtotal</span><span>${fmt(d.sub)}</span></div>
+                    <div class="r-row"><span>Tax (${d.taxRate}%)</span><span>${fmt(d.tax)}</span></div>
+                    ${d.discount > 0 ? `<div class="r-row"><span>Discount</span><span>-${fmt(d.discount)}</span></div>` : ''}
+                    <div class="r-grand"><span>Total</span><span>${fmt(d.total)}</span></div>
+                </div>
+            </div>
+            <div class="r-footer">${d.footer.replace(/\n/g, '<br/>')}</div>
+        </div>`;
+    }
+    
+    if (currentStyle === 'elegant') {
+        let itemsHtml = items.map(i => `
+            <tr>
+                <td>${i.desc} <span style="font-size:11px;color:#b45309;font-style:italic;">(x${i.qty})</span></td>
+                <td>${fmt(i.qty * i.price)}</td>
+            </tr>
+        `).join('');
+        
+        return `
+        <div class="receipt-elegant" style="--theme-color: ${currentThemeColor};">
+            <div class="r-header">
+                ${logoHtml}
+                <div class="r-biz">${d.biz}</div>
+                <div class="r-address">${d.addr}</div>
+            </div>
+            <div class="r-meta">
+                <span><b>No:</b> ${d.no}</span>
+                <span><b>Date:</b> ${d.date}</span>
+                ${d.cust ? `<span><b>Guest:</b> ${d.cust}</span>` : ''}
+            </div>
+            ${travelDetailsHtml}
+            <table class="r-table">
+                <thead><tr><th>Item Description</th><th>Amount</th></tr></thead>
+                <tbody>${itemsHtml}</tbody>
+            </table>
+            <div class="r-totals">
+                <div class="r-row"><span>Subtotal</span><span>${fmt(d.sub)}</span></div>
+                <div class="r-row"><span>Tax</span><span>${fmt(d.tax)}</span></div>
+                ${d.discount > 0 ? `<div class="r-row"><span>Discount</span><span>-${fmt(d.discount)}</span></div>` : ''}
+                <div class="r-grand"><span>Total</span><span>${fmt(d.total)}</span></div>
+            </div>
+            <div class="r-footer">${d.footer.replace(/\n/g, '<br/>')}</div>
+        </div>`;
+    }
+
+    if (currentStyle === 'dark') {
+        let itemsHtml = items.map(i => `
+            <tr>
+                <td><div style="font-weight:600;color:#f8fafc;">${i.desc}</div><div style="font-size:12px;color:#64748b;">Qty: ${i.qty}</div></td>
+                <td>${fmt(i.qty * i.price)}</td>
+            </tr>
+        `).join('');
+        
+        return `
+        <div class="receipt-dark" style="--theme-color: ${currentThemeColor};">
+            <div class="r-header">
+                <div>
+                    ${logoHtml}
+                    <div class="r-biz">${d.biz}</div>
+                    <div style="font-size:13px;color:#94a3b8;">${d.addr}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div class="r-title">${d.title}</div>
+                    <div style="font-size:14px;color:#94a3b8;margin-top:4px;">#${d.no}</div>
+                </div>
+            </div>
+            <div class="r-meta-grid">
+                <div class="r-meta-block"><h4>Date</h4><p>${d.date}</p></div>
+                ${d.cust ? `<div class="r-meta-block"><h4>Bill To</h4><p>${d.cust}</p></div>` : ''}
+            </div>
+            ${travelDetailsHtml}
+            <table class="r-table">
+                <thead><tr><th>Description</th><th>Total</th></tr></thead>
+                <tbody>${itemsHtml}</tbody>
+            </table>
+            <div class="r-totals-wrapper">
+                <div class="r-totals">
+                    <div class="r-row"><span>Subtotal</span><span>${fmt(d.sub)}</span></div>
+                    <div class="r-row"><span>Tax</span><span>${fmt(d.tax)}</span></div>
+                    ${d.discount > 0 ? `<div class="r-row"><span>Discount</span><span>-${fmt(d.discount)}</span></div>` : ''}
+                    <div class="r-grand"><span>Total Due</span><span>${fmt(d.total)}</span></div>
+                </div>
+            </div>
+            <div class="r-footer">${d.footer.replace(/\n/g, '<br/>')}</div>
+        </div>`;
+    }
+}
+
+function updatePreview() {
+    const html = generateReceiptHTML();
+    document.getElementById('livePreviewContainer').innerHTML = html;
+    document.getElementById('modalPreviewContainer').innerHTML = html;
+}
+
+// Modal actions
+function openModal() {
+    updatePreview();
+    document.getElementById('previewModal').classList.add('open');
+}
+
+function closeModal() {
+    document.getElementById('previewModal').classList.remove('open');
+}
+
+// Download PDF
+function downloadPDF() {
+    const element = document.getElementById('modalPreviewContainer');
+    const opt = {
+        margin: 0,
+        filename: 'Receipt_' + document.getElementById('receiptNo').value + '.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
+}
+
+// WhatsApp Share
+function shareWhatsApp() {
+    const biz = document.getElementById('bizName').value;
+    const no = document.getElementById('receiptNo').value;
+    const tot = document.getElementById('lblTotal').innerText;
+    const text = `🧾 *Receipt from ${biz}*\nReceipt #: ${no}\nTotal Amount: ${tot}\n\nThank you for your business!`;
+    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    window.open(url, '_blank');
+}
+
+// Initial render
+renderItems();
+
+</script>
+</body>
+</html>
