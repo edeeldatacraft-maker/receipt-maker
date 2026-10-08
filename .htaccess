@@ -5,6 +5,11 @@ Options -Indexes
   RewriteEngine On
   RewriteBase /
 
+  # 0. Redirect www to non-www (canonical domain; GSC shows both versions indexed)
+  RewriteCond %{HTTP_HOST} ^www\.receipts-maker\.com$ [NC]
+  RewriteRule ^(.*)$ https://receipts-maker.com/$1 [R=301,L]
+
+
   # 1. Redirect /index.html to / and /folder/index.html to /folder/ (Clean URLs)
   RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /+index\.html[\ ?]
   RewriteRule ^index\.html$ / [R=301,L]
