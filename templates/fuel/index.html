@@ -28,6 +28,54 @@
     "url": "https://receipts-maker.com/templates/fuel/"
   }
   </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is this an official fuel receipt?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It is a generic sample in a pump-slip style, not issued by any fuel brand, and not valid as proof of purchase."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I show fuel grade and volume?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Grade, volume, and price per unit each have dedicated fields."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it combine store purchases?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. In-store items can be added below the fuel lines."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is it good for fleet logs?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Pump numbers and vehicle lines make it easy to file per vehicle."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is data stored?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Receipts generate locally in your browser."
+      }
+    }
+  ]
+}
+  </script>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="__className_f367f3 bg-slate-50 text-slate-900 antialiased">
@@ -109,30 +157,34 @@
               
               <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">Free Gas Station Receipt Template</h1>
               <p class="text-slate-600 leading-relaxed mb-6 font-medium">
-                Need a professional receipt that looks like a real transaction slip from <strong>Gas Station</strong>? 
-                Our free receipt generator has you covered. Whether you need to replace a lost receipt, keep business transaction records, or write proof of payment, this fully customizable template will make it look official in seconds.
+                Fuel receipts are the classic pump slip: volume, price per unit, and a total. This gas-station generic sample mirrors that forecourt ticket for independent stations, truck stops, and fleet operators. It itemizes fuel grade, volume, and price, plus in-store purchases on the same slip. Use it at the pump, for fleet fuel logs, or as an expense record for business mileage.
               </p>
 
               <div class="space-y-4 border-t border-slate-100 pt-6">
                 <h3 class="font-bold text-slate-900 text-lg">Template Specifications</h3>
-                <div class="grid grid-cols-2 gap-4 text-sm">
-                  <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
-                    <span class="text-xs text-slate-400 block font-bold uppercase tracking-wider">Template Style</span>
-                    <span class="font-bold text-slate-700 capitalize">thermal Receipt</span>
-                  </div>
-                  <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
-                    <span class="text-xs text-slate-400 block font-bold uppercase tracking-wider">Format</span>
-                    <span class="font-bold text-slate-700">PDF, PNG &amp; JPG</span>
-                  </div>
-                  <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
-                    <span class="text-xs text-slate-400 block font-bold uppercase tracking-wider">Custom Logo</span>
-                    <span class="font-bold text-slate-700">Supported (JPG/PNG)</span>
-                  </div>
-                  <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
-                    <span class="text-xs text-slate-400 block font-bold uppercase tracking-wider">Calculations</span>
-                    <span class="font-bold text-slate-700">Automatic Tax &amp; Total</span>
-                  </div>
+                <div class="space-y-3 text-sm">
+                <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
+                  <span class="text-xs text-slate-400 block font-bold uppercase tracking-wider mb-1">Format</span>
+                  <span class="font-medium text-slate-700">Pump slip, fuel-itemized layout</span>
                 </div>
+                <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
+                  <span class="text-xs text-slate-400 block font-bold uppercase tracking-wider mb-1">Fields</span>
+                  <span class="font-medium text-slate-700">Station header, pump number, fuel grade, volume, price per unit, store items, subtotal, tax, total, payment method</span>
+                </div>
+                <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
+                  <span class="text-xs text-slate-400 block font-bold uppercase tracking-wider mb-1">Best for</span>
+                  <span class="font-medium text-slate-700">Gas stations, truck stops, fleet operators, marinas</span>
+                </div>
+                <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
+                  <span class="text-xs text-slate-400 block font-bold uppercase tracking-wider mb-1">Customization</span>
+                  <span class="font-medium text-slate-700">Station branding, fuel grades, tax settings</span>
+                </div>
+                </div>
+              </div>
+
+<div class="mt-6">
+                <h3 class="font-bold text-slate-900 text-lg mb-2">Who uses this template</h3>
+                <p class="text-slate-600 text-sm leading-relaxed">Independent stations issuing pump receipts, fleet managers logging fuel purchases, and drivers keeping mileage expense records.</p>
               </div>
 
               <!-- BUTTON CTA -->
@@ -152,21 +204,46 @@
               
               <ol class="space-y-4 text-sm text-slate-600 list-decimal pl-5">
                 <li>
-                  <strong>Open the Editor:</strong> Click the button above to load the Gas Station template inside the online receipt maker.
+                  Set your station name and address.
                 </li>
                 <li>
-                  <strong>Enter Store Details:</strong> Fill out the business name, address, phone number, and receipt code if needed.
+                  Enter the pump number, fuel grade, and volume.
                 </li>
                 <li>
-                  <strong>Add Item Details:</strong> Enter the names, quantities, and prices for each product or service. The system will calculate subtotals and totals automatically.
+                  Add any in-store purchases to the same slip.
                 </li>
                 <li>
-                  <strong>Set Date &amp; Payment:</strong> Choose the transaction date, time, and how the invoice was paid (Cash, Card, bank transfer).
+                  Check the price math and total.
                 </li>
                 <li>
-                  <strong>Export and Print:</strong> Click the "Generate" button, then choose to download as a high-quality PDF or export as an image.
+                  Print at the pump or download the PDF.
                 </li>
               </ol>
+            </div>
+<div class="bg-white rounded-3xl p-8 border border-slate-100 shadow-sm space-y-4">
+              <h2 class="text-2xl font-black text-slate-900 tracking-tight">Gas Station Receipt Template FAQs</h2>
+              <div class="space-y-5">
+              <div>
+                <h3 class="font-bold text-slate-900 text-sm mb-1">Is this an official fuel receipt?</h3>
+                <p class="text-slate-600 text-sm">It is a generic sample in a pump-slip style, not issued by any fuel brand, and not valid as proof of purchase.</p>
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-900 text-sm mb-1">Can I show fuel grade and volume?</h3>
+                <p class="text-slate-600 text-sm">Yes. Grade, volume, and price per unit each have dedicated fields.</p>
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-900 text-sm mb-1">Does it combine store purchases?</h3>
+                <p class="text-slate-600 text-sm">Yes. In-store items can be added below the fuel lines.</p>
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-900 text-sm mb-1">Is it good for fleet logs?</h3>
+                <p class="text-slate-600 text-sm">Yes. Pump numbers and vehicle lines make it easy to file per vehicle.</p>
+              </div>
+              <div>
+                <h3 class="font-bold text-slate-900 text-sm mb-1">Is data stored?</h3>
+                <p class="text-slate-600 text-sm">No. Receipts generate locally in your browser.</p>
+              </div>
+              </div>
             </div>
           </div>
 
